@@ -3,7 +3,7 @@
 add_action( 'init', 'ccs_register_my_cpts' );
 function ccs_register_my_cpts() {
 
-    // Event(s) content type
+    // Framework(s) content type
     $labels = array(
         "name" => __('Frameworks', ''),
         "singular_name" => __('Framework', ''),
@@ -43,6 +43,47 @@ function ccs_register_my_cpts() {
 
 
 
+    // Lot(s) content type
+    $labels = array(
+        "name" => __('Lots', ''),
+        "singular_name" => __('Lot', ''),
+        "menu_name" => __('Lots', ''),
+        "name_admin_bar" => __('Lot', ''),
+        'add_new'            => __('Add new', 'lot', ''),
+        'add_new_item'       => __('Add new Lot', ''),
+        'new_item'           => __('New Lot', ''),
+        'edit_item'          => __('Edit Lot', ''),
+        'view_item'          => __('View Lot', ''),
+        'all_items'          => __('All Lots', ''),
+        'search_items'       => __('Search Lots', ''),
+        'parent_item_colon'  => __('Parent Lot:', ''),
+        'not_found'          => __('No Lots found.', ''),
+        'not_found_in_trash' => __('No Lots found in Trash.', '')
+    );
+
+    $args = array(
+        "labels" => $labels,
+        "description" => "",
+        "public" => true,
+        "show_ui" => true,
+        "show_in_rest" => false,
+        "rest_base" => "",
+        "has_archive" => false,
+        "show_in_menu" => true,
+        "exclude_from_search" => false,
+        "capability_type" => "post",
+        "map_meta_cap" => true,
+        "hierarchical" => false,
+        "rewrite" => array("slug" => "lots"),
+        "query_var" => true,
+        "menu_icon" => "dashicons-editor-ol",
+        "supports" => array("title", "excerpt", "revisions", "editor"),
+    );
+    register_post_type("lot", $args);
+
+
+
+    // Supplier(s) content type
     $labels = array(
         "name" => __('Suppliers', ''),
         "singular_name" => __('Supplier', ''),
@@ -77,7 +118,7 @@ function ccs_register_my_cpts() {
         "rewrite" => array("slug" => "suppliers"),
         "query_var" => true,
         "menu_icon" => "dashicons-groups",
-        "supports" => array("title", "excerpt", "revisions", "editor"),
+        "supports" => array("title", "excerpt", "revisions"),
     );
 
     register_post_type( "supplier", $args) ;
