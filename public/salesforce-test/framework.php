@@ -1,12 +1,24 @@
 <?php
 
 require '_header.php';
+
+use App\Repository\FrameworkRepository;
 use App\Services\Salesforce\SalesforceApi;
+
+$frameworkRepository = new FrameworkRepository();
+var_dump('asdasdas');
+
+print_r($frameworkRepository->findAll());
+die();
 
 $frameworkId = $_GET['framework_id'];
 
 $salesforceApi = new SalesforceApi();
 $framework = $salesforceApi->getFramework($frameworkId);
+
+
+print_r($framework);
+die();
 
 $lots = $salesforceApi->query("SELECT Id, Long_Name__c, Expiry_Date__c, Name from Master_Framework_Lot__c WHERE Master_Framework__c = '" . $framework->Id . "'");
 

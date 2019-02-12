@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Salesforce;
 
+use App\Model\Framework;
 use GuzzleHttp\Client;
 
 /**
@@ -119,14 +120,17 @@ class SalesforceApi
      * @param $frameworkId
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \ReflectionException
      */
     public function getFramework($frameworkId)
     {
+        // Make API Request
         $this->response = $this->client->request('GET', 'sobjects/Master_Framework__c/' . $frameworkId, [
           'headers' => $this->headers,
         ]);
 
-        return $this->getResponseContent();
+        $framework = new Framework();
+        $framework->setMappedFields($this->getResponseContent());
     }
 
 

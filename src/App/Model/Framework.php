@@ -4,17 +4,46 @@ namespace App\Model;
 
 use App\Traits\SalesforceMappingTrait;
 use App\Traits\SearchableTrait;
+use Nayjest\StrCaseConverter\Str;
 
-class Framework extends AbstractModel {
+class Framework implements ModelInterface {
 
     use SearchableTrait, SalesforceMappingTrait;
 
     protected $excludeFromSearch = ['documents', 'documentUpdates'];
 
     /**
-     * @var integer
+     * Framework constructor.
+     * @param array|null $data
+     */
+    public function __construct(array $data = null)
+    {
+        if (empty($data)) {
+            return;
+        }
+
+        foreach ($data as $key => $value)
+        {
+            $this->{'set' . Str::toCamelCase($key)}($value);
+        }
+    }
+
+    /**
+     * @var string
      */
     protected $id;
+    /**
+     * @var string
+     */
+    protected $rmNumber;
+    /**
+     * @var string
+     */
+    protected $wordpressId;
+    /**
+     * @var string
+     */
+    protected $salesforceId;
     /**
      * @var string
      */
@@ -94,20 +123,72 @@ class Framework extends AbstractModel {
     protected $documents;
 
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
+     * @param string $id
      * @return Framework
      */
-    public function setId(int $id): Framework
+    public function setId(string $id): Framework
     {
         $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRmNumber(): string
+    {
+        return $this->rmNumber;
+    }
+
+    /**
+     * @param string $rmNumber
+     */
+    public function setRmNumber(string $rmNumber): void
+    {
+        $this->rmNumber = $rmNumber;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSalesforceId(): string
+    {
+        return $this->salesforceId;
+    }
+
+    /**
+     * @param string $salesforceId
+     * @return Framework
+     */
+    public function setSalesforceId(string $salesforceId): Framework
+    {
+        $this->salesforceId = $salesforceId;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWordpressId(): string
+    {
+        return $this->wordpressId;
+    }
+
+    /**
+     * @param string $wordpressId
+     * @return Framework
+     */
+    public function setWordpressId(string $wordpressId): Framework
+    {
+        $this->wordpressId = $wordpressId;
         return $this;
     }
 
@@ -123,7 +204,7 @@ class Framework extends AbstractModel {
      * @param string $title
      * @return Framework
      */
-    public function setTitle(string $title): Framework
+    public function setTitle(?string $title): Framework
     {
         $this->title = $title;
         return $this;
@@ -141,7 +222,7 @@ class Framework extends AbstractModel {
      * @param string $summary
      * @return Framework
      */
-    public function setSummary(string $summary): Framework
+    public function setSummary(?string $summary): Framework
     {
         $this->summary = $summary;
         return $this;
@@ -159,7 +240,7 @@ class Framework extends AbstractModel {
      * @param string $description
      * @return Framework
      */
-    public function setDescription(string $description): Framework
+    public function setDescription(?string $description): Framework
     {
         $this->description = $description;
         return $this;
@@ -177,7 +258,7 @@ class Framework extends AbstractModel {
      * @param string $updates
      * @return Framework
      */
-    public function setUpdates(string $updates): Framework
+    public function setUpdates(?string $updates): Framework
     {
         $this->updates = $updates;
         return $this;
@@ -195,7 +276,7 @@ class Framework extends AbstractModel {
      * @param string $benefits
      * @return Framework
      */
-    public function setBenefits(string $benefits): Framework
+    public function setBenefits(?string $benefits): Framework
     {
         $this->benefits = $benefits;
         return $this;
@@ -213,7 +294,7 @@ class Framework extends AbstractModel {
      * @param array $lots
      * @return Framework
      */
-    public function setLots(array $lots): Framework
+    public function setLots(?array $lots): Framework
     {
         $this->lots = $lots;
         return $this;
@@ -231,7 +312,7 @@ class Framework extends AbstractModel {
      * @param string $howToBuy
      * @return Framework
      */
-    public function setHowToBuy(string $howToBuy): Framework
+    public function setHowToBuy(?string $howToBuy): Framework
     {
         $this->howToBuy = $howToBuy;
         return $this;
@@ -249,7 +330,7 @@ class Framework extends AbstractModel {
      * @param string $terms
      * @return Framework
      */
-    public function setTerms(string $terms): Framework
+    public function setTerms(?string $terms): Framework
     {
         $this->terms = $terms;
         return $this;
@@ -267,7 +348,7 @@ class Framework extends AbstractModel {
      * @param string $pillar
      * @return Framework
      */
-    public function setPillar(string $pillar): Framework
+    public function setPillar(?string $pillar): Framework
     {
         $this->pillar = $pillar;
         return $this;
@@ -285,7 +366,7 @@ class Framework extends AbstractModel {
      * @param string $category
      * @return Framework
      */
-    public function setCategory(string $category): Framework
+    public function setCategory(?string $category): Framework
     {
         $this->category = $category;
         return $this;
@@ -303,7 +384,7 @@ class Framework extends AbstractModel {
      * @param string $status
      * @return Framework
      */
-    public function setStatus(string $status): Framework
+    public function setStatus(?string $status): Framework
     {
         $this->status = $status;
         return $this;
@@ -319,10 +400,16 @@ class Framework extends AbstractModel {
 
     /**
      * @param \DateTime $startDate
+     * @param string $format
      * @return Framework
      */
-    public function setStartDate(\DateTime $startDate): Framework
+    public function setStartDate($startDate, $format = 'Y-m-d'): Framework
     {
+        if (!$startDate instanceof \DateTime)
+        {
+            $startDate = date_create_from_format($format, $startDate);
+        }
+
         $this->startDate = $startDate;
         return $this;
     }
@@ -337,10 +424,16 @@ class Framework extends AbstractModel {
 
     /**
      * @param \DateTime $endDate
+     * @param string $format
      * @return Framework
      */
-    public function setEndDate(\DateTime $endDate): Framework
+    public function setEndDate($endDate, $format = 'Y-m-d'): Framework
     {
+        if (!$endDate instanceof \DateTime)
+        {
+            $endDate = date_create_from_format($format, $endDate);
+        }
+
         $this->endDate = $endDate;
         return $this;
     }
@@ -354,11 +447,17 @@ class Framework extends AbstractModel {
     }
 
     /**
-     * @param \DateTime $tendersOpenDate
+     * @param $tendersOpenDate
+     * @param string $format
      * @return Framework
      */
-    public function setTendersOpenDate(\DateTime $tendersOpenDate): Framework
+    public function setTendersOpenDate($tendersOpenDate, $format = 'Y-m-d'): Framework
     {
+        if (!$tendersOpenDate instanceof \DateTime)
+        {
+            $tendersOpenDate = date_create_from_format($format, $tendersOpenDate);
+        }
+
         $this->tendersOpenDate = $tendersOpenDate;
         return $this;
     }
@@ -372,11 +471,17 @@ class Framework extends AbstractModel {
     }
 
     /**
-     * @param \DateTime $tendersCloseDate
+     * @param $tendersCloseDate
+     * @param string $format
      * @return Framework
      */
-    public function setTendersCloseDate(\DateTime $tendersCloseDate): Framework
+    public function setTendersCloseDate($tendersCloseDate, $format = 'Y-m-d'): Framework
     {
+        if (!$tendersCloseDate instanceof \DateTime)
+        {
+            $tendersCloseDate = date_create_from_format($format, $tendersCloseDate);
+        }
+
         $this->tendersCloseDate = $tendersCloseDate;
         return $this;
     }
@@ -391,10 +496,16 @@ class Framework extends AbstractModel {
 
     /**
      * @param \DateTime $expectedLiveDate
+     * @param string $format
      * @return Framework
      */
-    public function setExpectedLiveDate(\DateTime $expectedLiveDate): Framework
+    public function setExpectedLiveDate($expectedLiveDate, $format = 'Y-m-d'): Framework
     {
+        if (!$expectedLiveDate instanceof \DateTime)
+        {
+            $expectedLiveDate = date_create_from_format($format, $expectedLiveDate);
+        }
+
         $this->expectedLiveDate = $expectedLiveDate;
         return $this;
     }
@@ -408,11 +519,17 @@ class Framework extends AbstractModel {
     }
 
     /**
-     * @param \DateTime $expectedAwardDate
+     * @param $expectedAwardDate
+     * @param string $format
      * @return Framework
      */
-    public function setExpectedAwardDate(\DateTime $expectedAwardDate
-    ): Framework {
+    public function setExpectedAwardDate($expectedAwardDate, $format = 'Y-m-d'): Framework
+    {
+        if (!$expectedAwardDate instanceof \DateTime)
+        {
+            $expectedAwardDate = date_create_from_format($format, $expectedAwardDate);
+        }
+
         $this->expectedAwardDate = $expectedAwardDate;
         return $this;
     }

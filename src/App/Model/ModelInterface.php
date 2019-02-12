@@ -2,6 +2,6 @@
 
 namespace App\Model;
 
-abstract class AbstractModel {
+interface ModelInterface {
 
 }

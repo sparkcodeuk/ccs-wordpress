@@ -5,11 +5,11 @@ namespace App\Traits;
 trait SearchableTrait {
 
     /**
-     * An array of properties to be excluded from the search index
+     * You can add the below array of properties to your class which will be excluded from the search index
      *
      * @var array
      */
-    protected $excludeFromSearch = [];
+    // protected $excludeFromSearch = [];
 
     /**
      * Indexes the current model

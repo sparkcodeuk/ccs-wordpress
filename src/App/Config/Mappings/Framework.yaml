@@ -1,6 +1,6 @@
 objectName: Master_Framework_c
 properties:
-  id: RM_Number__c
+  frameworkId: RM_Number__c
   title: Long_Name__c
   terms: Framework_Terms__c
   pillar: Pillar__c
