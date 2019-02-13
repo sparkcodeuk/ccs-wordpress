@@ -73,6 +73,14 @@ abstract class AbstractRepository implements RepositoryInterface {
         return $this->translateSingleResultToModel($result);
     }
 
+    /**
+     * Create the the current data object in the database or update it if it already exists
+     *
+     * @param $searchField
+     * @param $searchValue
+     * @param $object
+     * @return mixed
+     */
     public function createOrUpdate($searchField, $searchValue, $object)
     {
         if ($this->idExists($searchValue, $searchField))

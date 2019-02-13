@@ -20,7 +20,7 @@ foreach ($frameworks as $framework)
 
 
 echo '<h1 class="title">Frameworks</h1>';
-echo '<h2 class="subtitle">' . count($frameworks->records) . ' records found</h2>';
+echo '<h2 class="subtitle">' . count($frameworks) . ' records found</h2>';
 
 echo '<ul>';
 
