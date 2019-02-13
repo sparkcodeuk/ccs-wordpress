@@ -25,6 +25,7 @@ class FrameworkRepository extends AbstractRepository {
     public function create(Framework $framework) {
 
         $databaseBindings = [
+          'title'               => ':title',
           'rm_number'           => ':rm_number',
           'wordpress_id'        => ':wordpress_id',
           'salesforce_id'       => ':salesforce_id',
@@ -58,6 +59,7 @@ class FrameworkRepository extends AbstractRepository {
     public function update($searchField, $searchValue, Framework $framework)
     {
         $databaseBindings = [
+          'title'               => ':title',
           'rm_number'           => ':rm_number',
           'wordpress_id'        => ':wordpress_id',
           'salesforce_id'       => ':salesforce_id',
@@ -106,7 +108,7 @@ class FrameworkRepository extends AbstractRepository {
      * @param $framework
      * @return mixed
      */
-    protected function bindValues($databaseBindings, $query, $framework)
+    protected function bindValues($databaseBindings, $query, Framework $framework)
     {
         // Bind values todo: Simplfy this process
 
@@ -114,6 +116,12 @@ class FrameworkRepository extends AbstractRepository {
         {
             $rmNumber = $framework->getRmNumber();
             $query->bindParam(':rm_number', $rmNumber, \PDO::PARAM_STR);
+        }
+
+        if (isset($databaseBindings['title']))
+        {
+            $title = $framework->getTitle();
+            $query->bindParam(':title', $title, \PDO::PARAM_STR);
         }
 
         if (isset($databaseBindings['wordpress_id']))
