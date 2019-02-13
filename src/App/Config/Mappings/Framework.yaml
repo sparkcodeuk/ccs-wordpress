@@ -1,6 +1,7 @@
 objectName: Master_Framework_c
 properties:
-  frameworkId: RM_Number__c
+  rmNumber: RM_Number__c
+  salesforceId: Id
   title: Long_Name__c
   terms: Framework_Terms__c
   pillar: Pillar__c

@@ -10,7 +10,7 @@ class Framework implements ModelInterface {
 
     use SearchableTrait, SalesforceMappingTrait;
 
-    protected $excludeFromSearch = ['documents', 'documentUpdates'];
+    protected $excludeFromSearch = ['documents', 'documentUpdates', 'mappings'];
 
     /**
      * Framework constructor.
@@ -125,7 +125,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -143,7 +143,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getRmNumber(): string
+    public function getRmNumber(): ?string
     {
         return $this->rmNumber;
     }
@@ -159,7 +159,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getSalesforceId(): string
+    public function getSalesforceId(): ?string
     {
         return $this->salesforceId;
     }
@@ -177,7 +177,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getWordpressId(): string
+    public function getWordpressId(): ?string
     {
         return $this->wordpressId;
     }
@@ -393,8 +393,11 @@ class Framework implements ModelInterface {
     /**
      * @return \DateTime
      */
-    public function getStartDate(): \DateTime
+    public function getStartDate(): ?\DateTime
     {
+        if (!$this->startDate) {
+            return null;
+        }
         return $this->startDate;
     }
 
@@ -417,8 +420,11 @@ class Framework implements ModelInterface {
     /**
      * @return \DateTime
      */
-    public function getEndDate(): \DateTime
+    public function getEndDate(): ?\DateTime
     {
+        if (!$this->endDate) {
+            return null;
+        }
         return $this->endDate;
     }
 
@@ -441,8 +447,11 @@ class Framework implements ModelInterface {
     /**
      * @return \DateTime
      */
-    public function getTendersOpenDate(): \DateTime
+    public function getTendersOpenDate(): ?\DateTime
     {
+        if (!$this->tendersOpenDate) {
+            return null;
+        }
         return $this->tendersOpenDate;
     }
 
@@ -465,8 +474,11 @@ class Framework implements ModelInterface {
     /**
      * @return \DateTime
      */
-    public function getTendersCloseDate(): \DateTime
+    public function getTendersCloseDate(): ?\DateTime
     {
+        if (!$this->tendersCloseDate) {
+            return null;
+        }
         return $this->tendersCloseDate;
     }
 
@@ -489,8 +501,11 @@ class Framework implements ModelInterface {
     /**
      * @return \DateTime
      */
-    public function getExpectedLiveDate(): \DateTime
+    public function getExpectedLiveDate(): ?\DateTime
     {
+        if (!$this->tendersCloseDate) {
+            return null;
+        }
         return $this->expectedLiveDate;
     }
 
@@ -513,8 +528,11 @@ class Framework implements ModelInterface {
     /**
      * @return \DateTime
      */
-    public function getExpectedAwardDate(): \DateTime
+    public function getExpectedAwardDate(): ?\DateTime
     {
+        if (!$this->expectedAwardDate) {
+            return null;
+        }
         return $this->expectedAwardDate;
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Utils\YamlLoader;
 use Symfony\Component\Yaml\Yaml;
 
 trait SalesforceMappingTrait {
@@ -25,7 +26,7 @@ trait SalesforceMappingTrait {
         $className = (new \ReflectionClass($this))->getShortName();
         
         if (empty($this->mappings)) {
-            $this->loadMappings($className);
+            $this->mappings = YamlLoader::loadMappings($className);
         }
 
         foreach ($this->mappings['properties'] as $classProperty => $salesforceProperty)
@@ -33,21 +34,6 @@ trait SalesforceMappingTrait {
             $method = "set" . ucfirst($classProperty);
             $this->$method($data->$salesforceProperty);
         }
-
-        print_r($this);
-        die();
-
-        // todo: Load the mapped fields
-    }
-
-    /**
-     * Load the YAML config file and convert it to a mappings array
-     * @param string $fileName
-     * @return mixed
-     */
-    protected function loadMappings(string $fileName): void
-    {
-        $this->mappings = Yaml::parseFile(__DIR__ . '/../Config/Mappings/' . $fileName . '.yaml');
     }
 
 }

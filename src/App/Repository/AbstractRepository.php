@@ -51,13 +51,16 @@ abstract class AbstractRepository implements RepositoryInterface {
     /**
      * Find a row with a certain Id
      *
+     * @param string $fieldName
      * @param $id
      * @return bool
      */
-    public function findById($id)
+    public function findById($id, $fieldName = 'id')
     {
-        $sql = 'SELECT * from  ' . $this->tableName . ' where id = :id';
+        $sql = 'SELECT * from  ' . $this->tableName . ' where :fieldName = :id';
+
         $query = $this->connection->prepare($sql);
+        $query->bindParam(':fieldName', $fieldName, \PDO::PARAM_STR);
         $query->bindParam(':id', (int) $id, \PDO::PARAM_INT);
         $query->execute();
 
@@ -70,18 +73,29 @@ abstract class AbstractRepository implements RepositoryInterface {
         return $this->translateSingleResultToModel($result);
     }
 
+    public function createOrUpdate($searchField, $searchValue, $object)
+    {
+        if ($this->idExists($searchValue, $searchField))
+        {
+            return $this->update($searchField, $searchValue, $object);
+        }
+
+        return $this->create($object);
+    }
+
     /**
      * Check if an Id exists in the DB already
      *
+     * @param $fieldName
      * @param $id
      * @return bool
      */
-    public function idExists($id)
+    public function idExists($id, $fieldName = 'id')
     {
-        $sql = 'SELECT * from ' . $this->tableName . ' where id = :id';
+        $sql = 'SELECT * from ' . $this->tableName . ' where ' . $fieldName . ' = :id';
 
         $query = $this->connection->prepare($sql);
-        $query->bindParam(':id', (int) $id, \PDO::PARAM_INT);
+        $query->bindParam(':id', $id, \PDO::PARAM_STR);
 
         $query->execute();
 

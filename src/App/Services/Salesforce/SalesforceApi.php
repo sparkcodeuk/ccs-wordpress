@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Salesforce;
 
 use App\Model\Framework;
+use App\Utils\YamlLoader;
 use GuzzleHttp\Client;
 
 /**
@@ -79,6 +80,7 @@ class SalesforceApi
 
     /**
      * @param string $query
+     * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function query($query)
@@ -122,7 +124,7 @@ class SalesforceApi
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \ReflectionException
      */
-    public function getFramework($frameworkId)
+    public function getSingleFramework($frameworkId)
     {
         // Make API Request
         $this->response = $this->client->request('GET', 'sobjects/Master_Framework__c/' . $frameworkId, [
@@ -131,8 +133,34 @@ class SalesforceApi
 
         $framework = new Framework();
         $framework->setMappedFields($this->getResponseContent());
+
+        return $framework;
     }
 
+    /**
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \ReflectionException
+     */
+    public function getAllFrameworks()
+    {
+        $frameworkMappings = YamlLoader::loadMappings('Framework');
+        $fieldsToReturn = implode(', ', array_values($frameworkMappings['properties']));
+
+        // Make API Request
+        $response = $this->query('SELECT ' . $fieldsToReturn . ' from Master_Framework__c ORDER BY Long_Name__c ASC NULLS FIRST');
+
+        $frameworks = [];
+
+        foreach ($response->records as $salesforceRecord)
+        {
+            $framework = new Framework();
+            $framework->setMappedFields($salesforceRecord);
+            $frameworks[] = $framework;
+        }
+
+        return $frameworks;
+    }
 
     /**
      * @param $lotId
