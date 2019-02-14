@@ -40,8 +40,6 @@ class LotSupplierRepository extends AbstractRepository
 
         $query = $this->bindValues($databaseBindings, $query, $lotSupplier);
 
-        $query->debugDumpParams();
-
         return $query->execute();
     }
 
