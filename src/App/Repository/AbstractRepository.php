@@ -74,6 +74,33 @@ abstract class AbstractRepository implements RepositoryInterface {
     }
 
     /**
+     * Find a row with a certain Id
+     *
+     * @param string $fieldName
+     * @param $id
+     * @return bool
+     */
+    public function findAllById($id, $fieldName = 'id')
+    {
+        $sql = 'SELECT * from ' . $this->tableName . ' where ' . $fieldName . ' = :id';
+
+        $query = $this->connection->prepare($sql);
+        $query->bindParam(':id', $id, \PDO::PARAM_STR);
+
+        $query->execute();
+
+        $results = $query->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (empty($results)) {
+            return false;
+        }
+
+        $modelCollection = $this->translateResultsToModels($results);
+
+        return $modelCollection;
+    }
+
+    /**
      * Create the the current data object in the database or update it if it already exists
      *
      * @param $searchField

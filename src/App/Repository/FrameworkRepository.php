@@ -118,8 +118,6 @@ class FrameworkRepository extends AbstractRepository {
      */
     protected function bindValues($databaseBindings, $query, Framework $framework)
     {
-        // Bind values todo: Simplfy this process
-
         if (isset($databaseBindings['rm_number']))
         {
             $rmNumber = $framework->getRmNumber();

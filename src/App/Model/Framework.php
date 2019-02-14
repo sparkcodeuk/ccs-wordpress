@@ -151,9 +151,10 @@ class Framework implements ModelInterface {
     /**
      * @param string $rmNumber
      */
-    public function setRmNumber(?string $rmNumber): void
+    public function setRmNumber(?string $rmNumber): Framework
     {
         $this->rmNumber = $rmNumber;
+        return $this;
     }
 
     /**

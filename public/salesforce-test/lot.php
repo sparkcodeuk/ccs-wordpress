@@ -1,12 +1,21 @@
 <?php
 
 require '_header.php';
+
+use App\Repository\LotRepository;
 use App\Services\Salesforce\SalesforceApi;
 
 $lotId = $_GET['lot_id'];
 
 $salesforceApi = new SalesforceApi();
 $lot = $salesforceApi->getLot($lotId);
+
+$lotRepository = new LotRepository();
+$lotRepository->createOrUpdate('salesforce_id', $lot->getSalesforceId(), $lot);
+
+
+
+die('process killed');
 
 $suppliersToDisplay = $salesforceApi->query("SELECT Id, Supplier__c from Supplier_Framework_Lot__c WHERE Master_Framework_Lot__c = '" . $lot->Id . "' AND (Status__c = 'Live' OR Status__c = 'Suspended')");
 

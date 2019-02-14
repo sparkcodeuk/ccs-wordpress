@@ -1,6 +1,7 @@
 <?php
 
 use App\Repository\FrameworkRepository;
+use App\Repository\LotRepository;
 use App\Services\Salesforce\SalesforceApi;
 
 add_action( 'admin_menu', 'ccs_salesforce_import_admin_menu' );
@@ -19,7 +20,8 @@ function ccs_salesforce_import(){
     $imported = false;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $importCount = run_import();
+        set_time_limit(120);
+        $response = run_import();
         $imported = true;
     }
         // Load the view to upload a file
@@ -35,21 +37,47 @@ function ccs_salesforce_import(){
  */
 function run_import() {
 
+    $importCount = [
+      'frameworks' => 0,
+      'lots'       => 0,
+      'suppliers'  => 0
+    ];
+
+    $errorCount = [
+      'frameworks' => 0,
+      'lots'       => 0,
+      'suppliers'  => 0
+    ];
+
     $salesforceApi = new SalesforceApi();
     
     $frameworks = $salesforceApi->getAllFrameworks();
-
     $frameworkRepository = new FrameworkRepository();
+    $lotRepository = new LotRepository();
 
-    $importCount = 0;
     foreach ($frameworks as $framework)
     {
-        $success = $frameworkRepository->createOrUpdate('salesforce_id', $framework->getSalesforceId(), $framework);
-        if ($success)
+        if (!$frameworkRepository->createOrUpdate('salesforce_id', $framework->getSalesforceId(), $framework))
         {
-            $importCount++;
+            $errorCount['frameworks']++;
+            continue;
+        }
+
+        $importCount['frameworks']++;
+
+        $lots = $salesforceApi->getFrameworkLots($framework->getSalesforceId());
+
+        foreach ($lots as $lot)
+        {
+            if (!$lotRepository->createOrUpdate('salesforce_id', $lot->getSalesforceId(), $lot))
+            {
+                $errorCount['lots']++;
+                continue;
+            }
+
+            $importCount['lots']++;
         }
     }
 
-    return $importCount;
+    return $response = ['importCount' => $importCount, 'errorCount' => $errorCount];
 }

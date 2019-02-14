@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Salesforce;
 
 use App\Model\Framework;
+use App\Model\Lot;
 use App\Utils\YamlLoader;
 use GuzzleHttp\Client;
 
@@ -148,7 +149,7 @@ class SalesforceApi
         $fieldsToReturn = implode(', ', array_values($frameworkMappings['properties']));
 
         // Make API Request
-        $response = $this->query('SELECT ' . $fieldsToReturn . ' from Master_Framework__c ORDER BY Long_Name__c ASC NULLS FIRST');
+        $response = $this->query('SELECT ' . $fieldsToReturn . ' from ' . $frameworkMappings['objectName']);
 
         $frameworks = [];
 
@@ -162,6 +163,43 @@ class SalesforceApi
         return $frameworks;
     }
 
+    public function getFrameworkLots($salesforceFrameworkId) {
+        return $this->getAllLots('Master_Framework__c = \'' . $salesforceFrameworkId . '\'');
+    }
+
+    /**
+     * @param null $where
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \ReflectionException
+     */
+    public function getAllLots($where = null)
+    {
+        $frameworkMappings = YamlLoader::loadMappings('Lot');
+        $fieldsToReturn = implode(', ', array_values($frameworkMappings['properties']));
+
+        // Make API Request
+        $query = 'SELECT ' . $fieldsToReturn . ' from ' . $frameworkMappings['objectName'];
+
+        // Add where query if it exists
+        if ($where) {
+            $query .= ' WHERE ' . $where;
+        }
+        
+        $response = $this->query($query);
+
+        $lots = [];
+
+        foreach ($response->records as $salesforceRecord)
+        {
+            $lot = new Lot();
+            $lot->setMappedFields($salesforceRecord);
+            $lots[] = $lot;
+        }
+
+        return $lots;
+    }
+
     /**
      * @param $lotId
      * @return mixed
@@ -173,7 +211,10 @@ class SalesforceApi
           'headers' => $this->headers,
         ]);
 
-        return $this->getResponseContent();
+        $lot = new Lot();
+        $lot->setMappedFields($this->getResponseContent());
+
+        return $lot;
     }
 
 

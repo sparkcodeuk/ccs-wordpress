@@ -3,6 +3,7 @@
 require '_header.php';
 
 use App\Repository\FrameworkRepository;
+use App\Repository\LotRepository;
 use App\Services\Salesforce\SalesforceApi;
 
 $frameworkId = $_GET['framework_id'];
@@ -11,8 +12,6 @@ $frameworkRepository = new FrameworkRepository();
 $framework = $frameworkRepository->findById($frameworkId, 'salesforce_id');
 
 $salesforceApi = new SalesforceApi();
-
-$lots = $salesforceApi->query("SELECT Id, Long_Name__c, Expiry_Date__c, Name from Master_Framework_Lot__c WHERE Master_Framework__c = '" . $framework->getSalesforceId() . "'");
 
 ?>
 
@@ -40,13 +39,21 @@ $lots = $salesforceApi->query("SELECT Id, Long_Name__c, Expiry_Date__c, Name fro
 <hr>
 <h2 class="subtitle is-4">Lots</h2>
 
+
+<?php
+$lotRepository = new LotRepository();
+$lots = $lotRepository->findAllById($frameworkId, 'framework_id');
+?>
+
+
 <ul>
 <?php
-foreach ($lots->records as $index => $lot)
+foreach ($lots as $lot)
 {
-    $name = !empty($lot->Long_Name__c) ? $lot->Long_Name__c : $lot->Name;
-
-    echo  '<li><a href="lot.php?lot_id=' . $lot->Id . '" style="text-decoration: underline;"><span style="width: 190px; display: inline-block">' . $lot->Id . '</span>' . $name . '</a> - Expiry: ' . $lot->Expiry_Date__c . '</li>';
+    echo '<li>
+<a href="lot.php?lot_id=' . $lot->getSalesforceId() . '" style="text-decoration: underline;">
+<span style="width: 190px; display: inline-block">' . $lot->getSalesforceId() . '</span>' .
+    $lot->getTitle() . '</a>';
 }
 ?>
 </ul>

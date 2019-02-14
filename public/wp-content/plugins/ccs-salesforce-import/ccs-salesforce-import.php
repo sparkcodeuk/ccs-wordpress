@@ -15,16 +15,13 @@ if (!defined('WPINC')) {
 }
 
 /**
- * The base config file that includes the stripe keys and any other
- * relevant config information (email addresses to send to etc.)
- */
-require __DIR__ . '/config.php';
-
-/**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
 require __DIR__ . '/PluginCore.php';
+
+
+require __DIR__ . '/plugin.php';
 
 /**
  * Begins execution of the plugin.
