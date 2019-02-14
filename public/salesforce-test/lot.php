@@ -3,19 +3,28 @@
 require '_header.php';
 
 use App\Repository\LotRepository;
-use App\Services\Salesforce\SalesforceApi;
 
 $lotId = $_GET['lot_id'];
 
-$salesforceApi = new SalesforceApi();
-$lot = $salesforceApi->getLot($lotId);
-
 $lotRepository = new LotRepository();
-$lotRepository->createOrUpdate('salesforce_id', $lot->getSalesforceId(), $lot);
+$lot = $lotRepository->findById($lotId, 'salesforce_id');
+
+?>
+
+<h1 class="title"><b>Name:</b> <?php echo $lot->getTitle() ?></h1>
+
+<h3><b>ID:</b> <?php echo $lot->getId() ?></h3>
+<h3><b>Framework ID:</b> <?php echo $lot->getFrameworkId() ?></h3>
+<h3><b>Wordpress ID:</b> <?php echo $lot->getWordpressId() ?></h3>
+<h3><b>Salesforce ID:</b> <?php echo $lot->getSalesforceId() ?></h3>
+<h3><b>Lot number:</b> <?php echo $lot->getLotNumber() ?></h3>
+<h3><b>Lot status:</b> <?php echo $lot->getStatus() ?></h3>
+<h3><b>Expiry date:</b> <?php echo !empty($lot->getExpiryDate()) ? $lot->getExpiryDate()->format('d/m/Y') : '' ?></h3>
+<h3><b>Should we hide suppliers?:</b> <?php echo $lot->isHideSuppliers() ?></h3>
 
 
 
-die('process killed');
+<?php
 
 $suppliersToDisplay = $salesforceApi->query("SELECT Id, Supplier__c from Supplier_Framework_Lot__c WHERE Master_Framework_Lot__c = '" . $lot->Id . "' AND (Status__c = 'Live' OR Status__c = 'Suspended')");
 
@@ -25,18 +34,8 @@ foreach ($suppliersToDisplay->records as $supplierToDisplay)
     $suppliers[] = $salesforceApi->getAccount($supplierToDisplay->Supplier__c);
 }
 
-$name = !empty($lot->Long_Name__c) ? $lot->Long_Name__c : '<small style="color: red;"><i>Long_Name__c</i> is empty. Falling back on <i>Name</i> field</small><br>' . $lot->Name;
-
 ?>
 
-<h1 class="title"><b>Name:</b> <?php echo $name ?></h1>
-
-<h3><b>ID:</b> <?php echo $lot->Id ?></h3>
-<h3><b>Framework ID:</b> <?php echo $lot->Master_Framework__c ?></h3>
-<h3><b>Lot number:</b> <?php echo $lot->Master_Framework_Lot_Number__c ?></h3>
-<h3><b>Lot title:</b> <?php echo $lot->Long_Name__c ?></h3>
-<h3><b>Lot status:</b> <?php echo $lot->Status__c ?></h3>
-<h3><b>Lot expiry date:</b> <?php echo $lot->Expiry_Date__c ?></h3>
 
 <hr>
 <h3 class="subtitle is-4">Suppliers</h3>
