@@ -2,6 +2,7 @@
 
 require '_header.php';
 
+use App\Model\Framework;
 use App\Repository\FrameworkRepository;
 use App\Services\Salesforce\SalesforceApi;
 
@@ -14,39 +15,33 @@ use App\Services\Salesforce\SalesforceApi;
 
 $frameworkId = $_GET['framework_id'];
 
-$salesforceApi = new SalesforceApi();
-$framework = $salesforceApi->getSingleFramework($frameworkId);
-
 $frameworkRepository = new FrameworkRepository();
-$frameworkRepository->createOrUpdate('salesforce_id', $framework->getSalesforceId(), $framework);
+$framework = $frameworkRepository->findById($frameworkId, 'salesforce_id');
 
+$salesforceApi = new SalesforceApi();
 
-die('We have killed the process');
-
-
-$lots = $salesforceApi->query("SELECT Id, Long_Name__c, Expiry_Date__c, Name from Master_Framework_Lot__c WHERE Master_Framework__c = '" . $framework->Id . "'");
+$lots = $salesforceApi->query("SELECT Id, Long_Name__c, Expiry_Date__c, Name from Master_Framework_Lot__c WHERE Master_Framework__c = '" . $framework->getSalesforceId() . "'");
 
 ?>
 
-<h1 class="title">Framework title: <?php echo $framework->Long_Name__c ?></h1>
-<h2 class="subtitle">Framework ID: <?php echo $framework->RM_Number__c ?></h2>
+<h1 class="title">Framework title: <?php echo $framework->getTitle(); ?></h1>
+<h2 class="subtitle">Framework ID: <?php echo $framework->getRmNumber(); ?></h2>
 
-<h3><b>Terms:</b> <?php echo $framework->Framework_Terms__c ?></h3>
-<h3><b>Pillar:</b> <?php echo $framework->Pillar__c ?></h3>
+<h3><b>Terms:</b> <?php echo $framework->getTerms() ?></h3>
+<h3><b>Pillar:</b> <?php echo $framework->getPillar() ?></h3>
 
-<h3><b>RAW (off framework object) Category:</b> <?php echo $framework->CCS_Category__c ?></h3>
-<h3><b>RAW (off framework object) Sub category:</b> <?php echo $framework->CCS_Sub_Category_Text__c ?></h3>
+<h3><b>Category:</b> <?php echo $framework->getCategory() ?></h3>
 
-<h3><b>Status:</b> <?php echo $framework->Status__c ?></h3>
+<h3><b>Status:</b> <?php echo $framework->getStatus() ?></h3>
 
-<h3><b>Framework start date:</b> <?php echo $framework->Start_Date__c ?></h3>
-<h3><b>Framework end date:</b> <?php echo $framework->Effective_End_Date__c ?></h3>
+<h3><b>Framework start date:</b> <?php echo !empty($framework->getStartDate()) ? $framework->getStartDate()->format('d/m/Y') : ''?></h3>
+<h3><b>Framework end date:</b> <?php echo !empty($framework->getEndDate()) ? $framework->getEndDate()->format('d/m/Y') : '' ?></h3>
 
-<h3><b>Tenders open date:</b> <?php echo $framework->OJEU_Date_Target__c ?></h3>
-<h3><b>Tenders close date:</b> <?php echo $framework->Tender_Closing_Date__c ?></h3>
+<h3><b>Tenders open date:</b> <?php echo !empty($framework->getTendersOpenDate()) ? $framework->getTendersOpenDate()->format('d/m/Y') : '' ?></h3>
+<h3><b>Tenders close date:</b> <?php echo !empty($framework->getTendersCloseDate()) ? $framework->getTendersCloseDate()->format('d/m/Y') : '' ?></h3>
 
-<h3><b>Expected live date:</b> <?php echo $framework->Framework_Live_Date_Target__c ?></h3>
-<h3><b>Expected award date:</b> <?php echo $framework->Award_Date_Target__c ?></h3>
+<h3><b>Expected live date:</b> <?php echo !empty($framework->getExpectedLiveDate()) ? $framework->getExpectedLiveDate()->format('d/m/Y') : '' ?></h3>
+<h3><b>Expected award date:</b> <?php echo !empty($framework->getExpectedAwardDate()) ? $framework->getExpectedAwardDate()->format('d/m/Y') : '' ?></h3>
 
 
 <?php

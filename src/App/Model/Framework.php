@@ -195,7 +195,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getTitle(): string
+    public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -213,7 +213,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getSummary(): string
+    public function getSummary(): ?string
     {
         return $this->summary;
     }
@@ -231,7 +231,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -249,7 +249,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getUpdates(): string
+    public function getUpdates(): ?string
     {
         return $this->updates;
     }
@@ -267,7 +267,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getBenefits(): string
+    public function getBenefits(): ?string
     {
         return $this->benefits;
     }
@@ -303,7 +303,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getHowToBuy(): string
+    public function getHowToBuy(): ?string
     {
         return $this->howToBuy;
     }
@@ -321,7 +321,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getTerms(): string
+    public function getTerms(): ?string
     {
         return $this->terms;
     }
@@ -339,7 +339,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getPillar(): string
+    public function getPillar(): ?string
     {
         return $this->pillar;
     }
@@ -357,7 +357,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getCategory(): string
+    public function getCategory(): ?string
     {
         return $this->category;
     }
@@ -375,7 +375,7 @@ class Framework implements ModelInterface {
     /**
      * @return string
      */
-    public function getStatus(): string
+    public function getStatus(): ?string
     {
         return $this->status;
     }

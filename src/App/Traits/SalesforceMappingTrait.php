@@ -3,7 +3,6 @@
 namespace App\Traits;
 
 use App\Utils\YamlLoader;
-use Symfony\Component\Yaml\Yaml;
 
 trait SalesforceMappingTrait {
 
@@ -17,12 +16,13 @@ trait SalesforceMappingTrait {
     protected $mappings = [];
 
     /**
+     * Uses the field mappings to set the correct Salesforce property to the right property on the model through it's setter.
+     *
      * @param $data
      * @throws \ReflectionException
      */
     public function setMappedFields($data)
     {
-        
         $className = (new \ReflectionClass($this))->getShortName();
         
         if (empty($this->mappings)) {

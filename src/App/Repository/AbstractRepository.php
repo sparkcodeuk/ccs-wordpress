@@ -57,14 +57,14 @@ abstract class AbstractRepository implements RepositoryInterface {
      */
     public function findById($id, $fieldName = 'id')
     {
-        $sql = 'SELECT * from  ' . $this->tableName . ' where :fieldName = :id';
+        $sql = 'SELECT * from ' . $this->tableName . ' where ' . $fieldName . ' = :id';
 
         $query = $this->connection->prepare($sql);
-        $query->bindParam(':fieldName', $fieldName, \PDO::PARAM_STR);
-        $query->bindParam(':id', (int) $id, \PDO::PARAM_INT);
+        $query->bindParam(':id', $id, \PDO::PARAM_STR);
+
         $query->execute();
 
-        $result = $query->fetch();
+        $result = $query->fetch(\PDO::FETCH_ASSOC);
 
         if (empty($result)) {
             return false;
