@@ -9,4 +9,4 @@ CREATE TABLE `ccs_lots` (
   `expiry_date` date DEFAULT NULL,
   `hide_suppliers` varchar(255) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3014 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

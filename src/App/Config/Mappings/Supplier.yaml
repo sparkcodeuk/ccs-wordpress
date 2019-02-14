@@ -2,11 +2,11 @@ objectName: Account
 properties:
   salesforceId: Id
   dunsNumber: Supplier_DUNS_Number__c
-  Name: Name
-  Phone: Phone
-  Address: BillingAddress
-  City: BillingCity
-  Country: BillingCountry
-  Postcode: BillingPostcode
-  Website: Website
-  TradingName: Trading_Name__c
+  name: Name
+  phoneNumber: Phone
+  street: BillingStreet
+  city: BillingCity
+  country: BillingCountry
+  postcode: BillingPostalCode
+  website: Website
+  tradingName: Trading_Name__c

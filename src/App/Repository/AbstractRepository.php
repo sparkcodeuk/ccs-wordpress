@@ -147,14 +147,15 @@ abstract class AbstractRepository implements RepositoryInterface {
      * Delete a record via ID
      *
      * @param $id
+     * @param string $fieldName
      * @return mixed
      */
-    public function deleteById($id)
+    public function deleteById($id, $fieldName = 'id')
     {
-        $sql = "DELETE FROM " . $this->tableName . " WHERE `id` = :id";
+        $sql = 'DELETE FROM ' . $this->tableName . ' where ' . $fieldName . ' = :id';
         $query = $this->connection->prepare($sql);
 
-        $query->bindParam(':id', (int) $id, \PDO::PARAM_INT);
+        $query->bindParam(':id', $id, \PDO::PARAM_STR);
 
         $outcome = $query->execute();
 

@@ -2,7 +2,11 @@
 
 require '_header.php';
 
+use App\Model\LotSupplier;
 use App\Repository\LotRepository;
+use App\Repository\LotSupplierRepository;
+use App\Repository\SupplierRepository;
+use App\Services\Salesforce\SalesforceApi;
 
 $lotId = $_GET['lot_id'];
 
@@ -26,12 +30,21 @@ $lot = $lotRepository->findById($lotId, 'salesforce_id');
 
 <?php
 
-$suppliersToDisplay = $salesforceApi->query("SELECT Id, Supplier__c from Supplier_Framework_Lot__c WHERE Master_Framework_Lot__c = '" . $lot->Id . "' AND (Status__c = 'Live' OR Status__c = 'Suspended')");
+$salesforceApi = new SalesforceApi();
 
-$suppliers = [];
-foreach ($suppliersToDisplay->records as $supplierToDisplay)
+$suppliers = $salesforceApi->getLotSuppliers($lotId);
+
+$supplierRepository = new SupplierRepository();
+$lotSupplierRepository = new LotSupplierRepository();
+
+// Remove all the current relationships to this lot, and create fresh ones.
+$lotSupplierRepository->deleteById($lot->getSalesforceId(), 'lot_id');
+
+foreach ($suppliers as $supplier)
 {
-    $suppliers[] = $salesforceApi->getAccount($supplierToDisplay->Supplier__c);
+    $lotSuppler = new LotSupplier(['lot_id' => $lotId, 'supplier_id' => $supplier->getSalesforceId()]);
+    $lotSupplierRepository->create($lotSuppler);
+    $supplierRepository->createOrUpdate('salesforce_id', $supplier->getSalesforceId(), $supplier);
 }
 
 ?>
@@ -42,9 +55,9 @@ foreach ($suppliersToDisplay->records as $supplierToDisplay)
 
 <ul>
 <?php
-foreach ($suppliers as $index => $supplier)
+foreach ($suppliers as $supplier)
 {
-    echo  '<li><a href="supplier.php?account_id=' . $supplier->Id . '" style="text-decoration: underline;"><span style="width: 190px; display: inline-block">' . $supplier->Id . '</span>' . $supplier->Name . '</a></li>';
+    echo  '<li><a href="supplier.php?account_id=' . $supplier->getSalesforceId() . '" style="text-decoration: underline;"><span style="width: 190px; display: inline-block">' . $supplier->getSalesforceId() . '</span>' . $supplier->getName() . '</a></li>';
 }
 ?>
 </ul>

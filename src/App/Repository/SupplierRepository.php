@@ -23,14 +23,15 @@ class SupplierRepository extends AbstractRepository
      * @param \App\Model\Supplier $supplier
      * @return mixed
      */
-    public function create(Supplier $supplier) {
+    public function create(Supplier $supplier)
+    {
 
         $databaseBindings = [
           'salesforce_id' => ':salesforce_id',
           'duns_number'   => ':duns_number',
           'name'          => ':name',
           'phone_number'  => ':phone_number',
-          'address'       => ':address',
+          'street'        => ':street',
           'city'          => ':city',
           'country'       => ':country',
           'postcode'      => ':postcode',
@@ -59,12 +60,12 @@ class SupplierRepository extends AbstractRepository
      */
     public function update($searchField, $searchValue, Supplier $supplier)
     {
-         $databaseBindings = [
+        $databaseBindings = [
           'salesforce_id' => ':salesforce_id',
           'duns_number'   => ':duns_number',
           'name'          => ':name',
           'phone_number'  => ':phone_number',
-          'address'       => ':address',
+          'street'        => ':street',
           'city'          => ':city',
           'country'       => ':country',
           'postcode'      => ':postcode',
@@ -73,8 +74,7 @@ class SupplierRepository extends AbstractRepository
         ];
 
         // Remove the field which we're using for the update command
-        if (isset($databaseBindings[$searchField]))
-        {
+        if (isset($databaseBindings[$searchField])) {
             unset($databaseBindings[$searchField]);
         }
 
@@ -111,63 +111,53 @@ class SupplierRepository extends AbstractRepository
      */
     protected function bindValues($databaseBindings, $query, Supplier $supplier)
     {
-        if (isset($databaseBindings['salesforce_id']))
-        {
+        if (isset($databaseBindings['salesforce_id'])) {
             $salesforceId = $supplier->getSalesforceId();
             $query->bindParam(':salesforce_id', $salesforceId, \PDO::PARAM_STR);
         }
 
-        if (isset($databaseBindings['duns_number']))
-        {
+        if (isset($databaseBindings['duns_number'])) {
             $dunsNumber = $supplier->getDunsNumber();
             $query->bindParam(':duns_number', $dunsNumber, \PDO::PARAM_STR);
         }
 
-        if (isset($databaseBindings['name']))
-        {
+        if (isset($databaseBindings['name'])) {
             $name = $supplier->getName();
             $query->bindParam(':name', $name, \PDO::PARAM_STR);
         }
 
-        if (isset($databaseBindings['phone_number']))
-        {
-            $phoneNumber = $supplier->getStatus();
+        if (isset($databaseBindings['phone_number'])) {
+            $phoneNumber = $supplier->getPhoneNumber();
             $query->bindParam(':phone_number', $phoneNumber, \PDO::PARAM_STR);
         }
 
-        if (isset($databaseBindings['address']))
-        {
-            $address = $supplier->getStatus();
-            $query->bindParam(':address', $address, \PDO::PARAM_STR);
+        if (isset($databaseBindings['street'])) {
+            $street = $supplier->getStreet();
+            $query->bindParam(':street', $street, \PDO::PARAM_STR);
         }
 
-        if (isset($databaseBindings['city']))
-        {
-            $city = $supplier->getStatus();
+        if (isset($databaseBindings['city'])) {
+            $city = $supplier->getCity();
             $query->bindParam(':city', $city, \PDO::PARAM_STR);
         }
 
-        if (isset($databaseBindings['country']))
-        {
-            $country = $supplier->getStatus();
+        if (isset($databaseBindings['country'])) {
+            $country = $supplier->getCountry();
             $query->bindParam(':country', $country, \PDO::PARAM_STR);
         }
 
-        if (isset($databaseBindings['postcode']))
-        {
-            $postcode = $supplier->getStatus();
+        if (isset($databaseBindings['postcode'])) {
+            $postcode = $supplier->getPostcode();
             $query->bindParam(':postcode', $postcode, \PDO::PARAM_STR);
         }
 
-        if (isset($databaseBindings['website']))
-        {
-            $website = $supplier->getStatus();
+        if (isset($databaseBindings['website'])) {
+            $website = $supplier->getWebsite();
             $query->bindParam(':website', $website, \PDO::PARAM_STR);
         }
 
-        if (isset($databaseBindings['trading_name']))
-        {
-            $tradingName = $supplier->getStatus();
+        if (isset($databaseBindings['trading_name'])) {
+            $tradingName = $supplier->getTradingName();
             $query->bindParam(':trading_name', $tradingName, \PDO::PARAM_STR);
         }
 

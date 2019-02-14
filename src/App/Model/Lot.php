@@ -4,29 +4,10 @@ namespace App\Model;
 
 use App\Traits\SalesforceMappingTrait;
 use App\Traits\SearchableTrait;
-use Nayjest\StrCaseConverter\Str;
 
-class Lot implements ModelInterface {
+class Lot extends AbstractModel {
 
     use SearchableTrait, SalesforceMappingTrait;
-
-    protected $excludeFromSearch = [];
-
-    /**
-     * Lot constructor.
-     * @param array|null $data
-     */
-    public function __construct(array $data = null)
-    {
-        if (empty($data)) {
-            return;
-        }
-
-        foreach ($data as $key => $value)
-        {
-            $this->{'set' . Str::toCamelCase($key)}($value);
-        }
-    }
 
     /**
      * @var string

@@ -4,29 +4,12 @@ namespace App\Model;
 
 use App\Traits\SalesforceMappingTrait;
 use App\Traits\SearchableTrait;
-use Nayjest\StrCaseConverter\Str;
 
-class Framework implements ModelInterface {
+class Framework extends AbstractModel {
 
     use SearchableTrait, SalesforceMappingTrait;
 
     protected $excludeFromSearch = ['documents', 'documentUpdates', 'mappings'];
-
-    /**
-     * Framework constructor.
-     * @param array|null $data
-     */
-    public function __construct(array $data = null)
-    {
-        if (empty($data)) {
-            return;
-        }
-
-        foreach ($data as $key => $value)
-        {
-            $this->{'set' . Str::toCamelCase($key)}($value);
-        }
-    }
 
     /**
      * @var string

@@ -15,4 +15,4 @@ CREATE TABLE `ccs_frameworks` (
   `expected_live_date` date DEFAULT NULL,
   `expected_award_date` date DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

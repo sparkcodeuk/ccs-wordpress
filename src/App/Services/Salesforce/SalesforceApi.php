@@ -6,6 +6,7 @@ namespace App\Services\Salesforce;
 
 use App\Model\Framework;
 use App\Model\Lot;
+use App\Model\Supplier;
 use App\Utils\YamlLoader;
 use GuzzleHttp\Client;
 
@@ -217,13 +218,26 @@ class SalesforceApi
         return $lot;
     }
 
+    public function getLotSuppliers($lotId)
+    {
+        $suppliersToDisplay = $this->query("SELECT Id, Supplier__c from Supplier_Framework_Lot__c WHERE Master_Framework_Lot__c = '" . $lotId . "' AND (Status__c = 'Live' OR Status__c = 'Suspended')");
+
+        $suppliers = [];
+        foreach ($suppliersToDisplay->records as $supplierToDisplay)
+        {
+            $suppliers[] = $this->getSupplier($supplierToDisplay->Supplier__c);
+        }
+
+        return $suppliers;
+    }
+
 
     /**
      * @param $supplierId
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getSupplier($supplierId)
+    public function getContact($supplierId)
     {
         $this->response = $this->client->request('GET', 'sobjects/Master_Framework_Lot_Contact__c/' . $supplierId, [
           'headers' => $this->headers,
@@ -236,29 +250,18 @@ class SalesforceApi
      * @param $accountId
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \ReflectionException
      */
-    public function getAccount($accountId)
+    public function getSupplier($accountId)
     {
         $this->response = $this->client->request('GET', 'sobjects/Account/' . $accountId, [
           'headers' => $this->headers,
         ]);
 
-        return $this->getResponseContent();
-    }
+        $supplier = new Supplier();
+        $supplier->setMappedFields($this->getResponseContent());
 
-
-    /**
-     * @param $categoryId
-     * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function getCategory($categoryId)
-    {
-        $this->response = $this->client->request('GET', 'sobjects/Category__c/' . $categoryId, [
-          'headers' => $this->headers,
-        ]);
-
-        return $this->getResponseContent();
+        return $supplier;
     }
 
 

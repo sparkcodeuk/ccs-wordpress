@@ -4,29 +4,10 @@ namespace App\Model;
 
 use App\Traits\SalesforceMappingTrait;
 use App\Traits\SearchableTrait;
-use Nayjest\StrCaseConverter\Str;
 
-class Supplier implements ModelInterface {
+class Supplier extends AbstractModel {
 
     use SearchableTrait, SalesforceMappingTrait;
-
-    protected $excludeFromSearch = [];
-
-    /**
-     * Lot constructor.
-     * @param array|null $data
-     */
-    public function __construct(array $data = null)
-    {
-        if (empty($data)) {
-            return;
-        }
-
-        foreach ($data as $key => $value)
-        {
-            $this->{'set' . Str::toCamelCase($key)}($value);
-        }
-    }
 
     /**
      * @var string
@@ -51,7 +32,7 @@ class Supplier implements ModelInterface {
     /**
      * @var string
      */
-    protected $address;
+    protected $street;
     /**
      * @var string
      */
@@ -84,9 +65,9 @@ class Supplier implements ModelInterface {
 
     /**
      * @param string $id
-     * @return Lot
+     * @return Supplier
      */
-    public function setId(?string $id): Lot
+    public function setId(?string $id): Supplier
     {
         $this->id = $id;
         return $this;
@@ -102,9 +83,9 @@ class Supplier implements ModelInterface {
 
     /**
      * @param string $salesforceId
-     * @return Lot
+     * @return Supplier
      */
-    public function setSalesforceId(?string $salesforceId): Lot
+    public function setSalesforceId(?string $salesforceId): Supplier
     {
         $this->salesforceId = $salesforceId;
         return $this;
@@ -167,18 +148,18 @@ class Supplier implements ModelInterface {
     /**
      * @return string
      */
-    public function getAddress(): ?string
+    public function getStreet(): ?string
     {
-        return $this->address;
+        return $this->street;
     }
 
     /**
-     * @param string $address
+     * @param string $street
      * @return Supplier
      */
-    public function setAddress(?string $address): Supplier
+    public function setStreet(?string $street): Supplier
     {
-        $this->address = $address;
+        $this->street = $street;
         return $this;
     }
 
