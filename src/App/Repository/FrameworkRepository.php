@@ -25,10 +25,14 @@ class FrameworkRepository extends AbstractRepository {
     public function create(Framework $framework) {
 
         $databaseBindings = [
-          'title'               => ':title',
           'rm_number'           => ':rm_number',
           'wordpress_id'        => ':wordpress_id',
           'salesforce_id'       => ':salesforce_id',
+          'title'               => ':title',
+          'terms'               => ':terms',
+          'pillar'              => ':pillar',
+          'category'            => ':category',
+          'status'              => ':status',
           'start_date'          => ':start_date',
           'end_date'            => ':end_date',
           'tenders_open_date'   => ':tenders_open_date',
@@ -59,10 +63,14 @@ class FrameworkRepository extends AbstractRepository {
     public function update($searchField, $searchValue, Framework $framework)
     {
         $databaseBindings = [
-          'title'               => ':title',
           'rm_number'           => ':rm_number',
           'wordpress_id'        => ':wordpress_id',
           'salesforce_id'       => ':salesforce_id',
+          'title'               => ':title',
+          'terms'               => ':terms',
+          'pillar'              => ':pillar',
+          'category'            => ':category',
+          'status'              => ':status',
           'start_date'          => ':start_date',
           'end_date'            => ':end_date',
           'tenders_open_date'   => ':tenders_open_date',
@@ -134,6 +142,30 @@ class FrameworkRepository extends AbstractRepository {
         {
             $salesforceId = $framework->getSalesforceId();
             $query->bindParam(':salesforce_id', $salesforceId, \PDO::PARAM_STR);
+        }
+
+        if (isset($databaseBindings['terms']))
+        {
+            $terms = $framework->getTerms();
+            $query->bindParam(':terms', $terms, \PDO::PARAM_STR);
+        }
+
+        if (isset($databaseBindings['pillar']))
+        {
+            $pillar = $framework->getPillar();
+            $query->bindParam(':pillar', $pillar, \PDO::PARAM_STR);
+        }
+
+        if (isset($databaseBindings['category']))
+        {
+            $category = $framework->getPillar();
+            $query->bindParam(':category', $category, \PDO::PARAM_STR);
+        }
+
+        if (isset($databaseBindings['status']))
+        {
+            $status = $framework->getStatus();
+            $query->bindParam(':status', $status, \PDO::PARAM_STR);
         }
 
         if (isset($databaseBindings['start_date']))

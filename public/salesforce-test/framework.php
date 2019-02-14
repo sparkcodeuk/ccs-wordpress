@@ -2,16 +2,8 @@
 
 require '_header.php';
 
-use App\Model\Framework;
 use App\Repository\FrameworkRepository;
 use App\Services\Salesforce\SalesforceApi;
-
-
-
-//print_r($frameworkRepository->findAll());
-//die();
-
-
 
 $frameworkId = $_GET['framework_id'];
 
@@ -43,17 +35,6 @@ $lots = $salesforceApi->query("SELECT Id, Long_Name__c, Expiry_Date__c, Name fro
 <h3><b>Expected live date:</b> <?php echo !empty($framework->getExpectedLiveDate()) ? $framework->getExpectedLiveDate()->format('d/m/Y') : '' ?></h3>
 <h3><b>Expected award date:</b> <?php echo !empty($framework->getExpectedAwardDate()) ? $framework->getExpectedAwardDate()->format('d/m/Y') : '' ?></h3>
 
-
-<?php
-
-$categoryObject = $salesforceApi->getCategory($framework->CCS_Sub_Category__c);
-
-?>
-
-<hr>
-<h2 class="subtitle is-4">Category<br><small style="font-size: 0.65em;">This category is looking up the category object and returning the name, rather than relying on what is returned in text on the Framework</small></h2>
-
-<h3><b><?php echo $categoryObject->Name ?></b></h3>
 
 
 <hr>
