@@ -151,7 +151,7 @@ class Framework implements ModelInterface {
     /**
      * @param string $rmNumber
      */
-    public function setRmNumber(string $rmNumber): void
+    public function setRmNumber(?string $rmNumber): void
     {
         $this->rmNumber = $rmNumber;
     }
@@ -168,7 +168,7 @@ class Framework implements ModelInterface {
      * @param string $salesforceId
      * @return Framework
      */
-    public function setSalesforceId(string $salesforceId): Framework
+    public function setSalesforceId(?string $salesforceId): Framework
     {
         $this->salesforceId = $salesforceId;
         return $this;
@@ -186,7 +186,7 @@ class Framework implements ModelInterface {
      * @param string $wordpressId
      * @return Framework
      */
-    public function setWordpressId(string $wordpressId): Framework
+    public function setWordpressId(?string $wordpressId): Framework
     {
         $this->wordpressId = $wordpressId;
         return $this;
