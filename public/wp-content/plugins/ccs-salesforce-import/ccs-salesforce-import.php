@@ -18,8 +18,11 @@ if (!defined('WPINC')) {
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require __DIR__ . '/PluginCore.php';
+if (class_exists('WP_CLI')) {
+    require __DIR__ . '/cli-commands.php';
+}
 
+require __DIR__ . '/PluginCore.php';
 
 require __DIR__ . '/plugin.php';
 
