@@ -24,8 +24,6 @@ if (class_exists('WP_CLI')) {
 
 require __DIR__ . '/PluginCore.php';
 
-require __DIR__ . '/plugin.php';
-
 /**
  * Begins execution of the plugin.
  *
