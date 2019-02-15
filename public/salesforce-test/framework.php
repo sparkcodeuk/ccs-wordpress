@@ -11,7 +11,8 @@ $frameworkId = $_GET['framework_id'];
 $frameworkRepository = new FrameworkRepository();
 $framework = $frameworkRepository->findById($frameworkId, 'salesforce_id');
 
-$salesforceApi = new SalesforceApi();
+$lotRepository = new LotRepository();
+$lots = $lotRepository->findAllById($frameworkId, 'framework_id');
 
 ?>
 
@@ -38,12 +39,6 @@ $salesforceApi = new SalesforceApi();
 
 <hr>
 <h2 class="subtitle is-4">Lots</h2>
-
-
-<?php
-$lotRepository = new LotRepository();
-$lots = $lotRepository->findAllById($frameworkId, 'framework_id');
-?>
 
 
 <ul>

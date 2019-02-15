@@ -2,16 +2,16 @@
 
 require '_header.php';
 
-use App\Model\LotSupplier;
 use App\Repository\LotRepository;
-use App\Repository\LotSupplierRepository;
 use App\Repository\SupplierRepository;
-use App\Services\Salesforce\SalesforceApi;
 
 $lotId = $_GET['lot_id'];
 
 $lotRepository = new LotRepository();
 $lot = $lotRepository->findById($lotId, 'salesforce_id');
+
+$supplierRepository = new SupplierRepository();
+//$suppliers = $supplierRepository->findById()
 
 ?>
 
@@ -26,28 +26,6 @@ $lot = $lotRepository->findById($lotId, 'salesforce_id');
 <h3><b>Expiry date:</b> <?php echo !empty($lot->getExpiryDate()) ? $lot->getExpiryDate()->format('d/m/Y') : '' ?></h3>
 <h3><b>Should we hide suppliers?:</b> <?php echo $lot->isHideSuppliers() ?></h3>
 
-
-
-<?php
-
-$salesforceApi = new SalesforceApi();
-
-$suppliers = $salesforceApi->getLotSuppliers($lotId);
-
-$supplierRepository = new SupplierRepository();
-$lotSupplierRepository = new LotSupplierRepository();
-
-// Remove all the current relationships to this lot, and create fresh ones.
-$lotSupplierRepository->deleteById($lot->getSalesforceId(), 'lot_id');
-
-foreach ($suppliers as $supplier)
-{
-    $lotSuppler = new LotSupplier(['lot_id' => $lotId, 'supplier_id' => $supplier->getSalesforceId()]);
-    $lotSupplierRepository->create($lotSuppler);
-    $supplierRepository->createOrUpdate('salesforce_id', $supplier->getSalesforceId(), $supplier);
-}
-
-?>
 
 
 <hr>

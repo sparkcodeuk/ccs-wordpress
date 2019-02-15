@@ -1,7 +1,10 @@
 <?php
 
+use App\Model\LotSupplier;
 use App\Repository\FrameworkRepository;
 use App\Repository\LotRepository;
+use App\Repository\LotSupplierRepository;
+use App\Repository\SupplierRepository;
 use App\Services\Salesforce\SalesforceApi;
 
 add_action( 'admin_menu', 'ccs_salesforce_import_admin_menu' );
@@ -63,6 +66,7 @@ function run_import() {
             continue;
         }
 
+
         $importCount['frameworks']++;
 
         $lots = $salesforceApi->getFrameworkLots($framework->getSalesforceId());
@@ -76,6 +80,28 @@ function run_import() {
             }
 
             $importCount['lots']++;
+
+            $suppliers = $salesforceApi->getLotSuppliers($lot->getSalesforceId());
+
+            $supplierRepository = new SupplierRepository();
+            $lotSupplierRepository = new LotSupplierRepository();
+
+            // Remove all the current relationships to this lot, and create fresh ones.
+            $lotSupplierRepository->deleteById($lot->getSalesforceId(), 'lot_id');
+
+            foreach ($suppliers as $supplier)
+            {
+                if (!$supplierRepository->createOrUpdate('salesforce_id', $supplier->getSalesforceId(), $supplier))
+                {
+                    $errorCount['suppliers']++;
+                    continue;
+                }
+
+                $importCount['suppliers']++;
+                $lotSuppler = new LotSupplier(['lot_id' => $lot->getSalesforceId(), 'supplier_id' => $supplier->getSalesforceId()]);
+                $lotSupplierRepository->create($lotSuppler);
+            }
+
         }
     }
 
