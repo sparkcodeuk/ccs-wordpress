@@ -20,3 +20,7 @@ Update the `.env` file with the following two bits of information received in th
 
 * SALESFORCE_ACCESS_TOKEN
 * SALESFORCE_INSTANCE_URL
+
+## Running the import
+
+The import can be run with the command `wp salesforce import all` when in the `/public` folder.
