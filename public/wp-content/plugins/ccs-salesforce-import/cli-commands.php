@@ -78,8 +78,13 @@ class Import
                     $errorCount['lots']++;
                     continue;
                 }
+                $lot = $lotRepository->findById($lot->getSalesforceId(), 'salesforce_id');
+
 
                 $importCount['lots']++;
+
+                $this->createLotInWordpress($lot);
+
 
                 $suppliers = $salesforceApi->getLotSuppliers($lot->getSalesforceId());
 
@@ -125,11 +130,11 @@ class Import
         if (!empty($framework->getWordpressId()))
         {
             // This framework already has a Wordpress ID assigned, so we need to update the Title.
-            $this->updateFrameworkTitle($framework);
+            $this->updatePostTitle($framework, 'framework');
             return;
         }
 
-        $wordpressId = $this->createPostInWordpress($framework);
+        $wordpressId = $this->createFrameworkPostInWordpress($framework);
 
         //Update the Framework model with the new Wordpress ID
         $framework->setWordpressId($wordpressId);
@@ -139,18 +144,42 @@ class Import
         $frameworkRepository->update('salesforce_id', $framework->getSalesforceId(), $framework);
     }
 
+    /**
+     * Determine if we need to create a new 'Lot' post in Wordpress, then (if we do) - create one.
+     *
+     * @param $lot
+     */
+    protected function createLotInWordpress($lot)
+    {
+        if (!empty($lot->getWordpressId()))
+        {
+            // This lot already has a Wordpress ID assigned, so we need to update the Title.
+            $this->updatePostTitle($lot, 'lot');
+            return;
+        }
 
-    public function updateFrameworkTitle($framework)
+        $wordpressId = $this->createLotPostInWordpress($lot);
+
+        //Update the Lot model with the new Wordpress ID
+        $lot->setWordpressId($wordpressId);
+
+        // Save the Lot back into the custom database.
+        $lotRepository = new LotRepository();
+        $lotRepository->update('salesforce_id', $lot->getSalesforceId(), $lot);
+    }
+
+
+    public function updatePostTitle($model, $type)
     {
        wp_update_post(array(
-            'ID' => $framework->getWordpressId(),
-            'post_title' => $framework->getTitle(),
-            'post_type' => 'framework'
+            'ID' => $model->getWordpressId(),
+            'post_title' => $model->getTitle(),
+            'post_type' => $type
         ));
 
     }
 
-    public function createPostInWordpress($framework)
+    public function createFrameworkPostInWordpress($framework)
     {
         // Create a new post
         $wordpressId = wp_insert_post(array(
@@ -158,8 +187,21 @@ class Import
             'post_type' => 'framework'
         ));
 
-        //Save the salesforce id in Wordpress
-        update_field('framework_id', $framework->getSalesforceId(), $wordpressId);
+
+            //Save the salesforce id in Wordpress
+            update_field('framework_id', $framework->getSalesforceId(), $wordpressId);
+
+
+        return $wordpressId;
+    }
+
+    public function createLotPostInWordpress($lot)
+    {
+        // Create a new post
+        $wordpressId = wp_insert_post(array(
+            'post_title' => $lot->getTitle(),
+            'post_type' => 'lot'
+        ));
 
         return $wordpressId;
     }
