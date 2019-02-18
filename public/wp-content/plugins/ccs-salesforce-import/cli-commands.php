@@ -62,6 +62,8 @@ class Import
                 continue;
             }
 
+            $framework = $frameworkRepository->findById($framework->getId());
+
             WP_CLI::success('Framework ' . $index . ' imported.');
             $importCount['frameworks']++;
 
@@ -119,19 +121,16 @@ class Import
      */
     protected function createFrameworkInWordpress($framework)
     {
+        var_dump($framework);
+        die();
         if (!empty($framework->getWordpressId()))
         {
-            // This framework already has a Wordpress ID assigned, so we don't need to do anything.
+            // This framework already has a Wordpress ID assigned, so we need to update the Title.
+            $this->updateFrameworkTitle($framework);
             return;
         }
 
-        // Create a new post
-        $wordpressId = wp_insert_post(array(
-            'post_title' => $framework->getTitle(),
-            'post_type' => 'framework'
-        ));
-
-        update_field('framework_id', $framework->getSalesforceId(), $wordpressId);
+        $wordpressId = $this->createPostInWordpress($framework);
 
         //Update the Framework model with the new Wordpress ID
         $framework->setWordpressId($wordpressId);
@@ -139,7 +138,42 @@ class Import
         // Save the Framework back into the custom database.
         $frameworkRepository = new FrameworkRepository();
         $frameworkRepository->update('salesforce_id', $framework->getSalesforceId(), $framework);
+
+        die();
     }
 
 
+    public function updateFrameworkTitle($framework)
+    {
+       $post_id = wp_update_post(array(
+            'ID' => $framework->getWordpressId(),
+            'post_title' => 'Title 1',
+            'post_type' => 'framework'
+        ), true);
+
+        if (is_wp_error($post_id)) {
+            $errors = $post_id->get_error_messages();
+            foreach ($errors as $error) {
+                echo $error;
+            }
+        }
+
+//        $frameworkTitle = get_post_field('post_title', $framework->getWordpressId());
+//
+//        update_field('post_title', 'Title1', $framework->getWordpressId());
+    }
+
+    public function createPostInWordpress($framework)
+    {
+        // Create a new post
+        $wordpressId = wp_insert_post(array(
+            'post_title' => $framework->getTitle(),
+            'post_type' => 'framework'
+        ));
+
+        //Save the salesforce id in Wordpress
+        update_field('framework_id', $framework->getSalesforceId(), $wordpressId);
+
+        return $wordpressId;
+    }
 }
