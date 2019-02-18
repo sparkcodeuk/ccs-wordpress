@@ -19,3 +19,10 @@ public/license.txt
 public/readme.html
 public/sitemap.xml
 public/sitemap.xml.gz
+
+
+.env.*.php
+.env.php
+.env
+vendor
+vendor/*
