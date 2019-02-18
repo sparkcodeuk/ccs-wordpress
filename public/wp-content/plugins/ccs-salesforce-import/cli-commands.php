@@ -125,15 +125,20 @@ class Import
             return;
         }
 
-        // Todo: Create a new post
-        // Todo: Assign any values we need to.
-        // Todo: Save post
-        // E.g. $wordpressId = wp_insert_post();
+        // Create a new post
+        $wordpressId = wp_insert_post(array(
+            'post_title' => $framework->getTitle(),
+            'post_type' => 'framework'
+        ));
 
-        // Todo: Update the Framework model with the new Wordpress ID
-        // E.g. $this->setWordpressId($wordpressId);
-        // Todo: Save the Framework back into the custom database.
-        // E.g. $frameworkRepository->update($framework);s
+        update_field('framework_id', $framework->getSalesforceId(), $wordpressId);
+
+        //Update the Framework model with the new Wordpress ID
+        $framework->setWordpressId($wordpressId);
+
+        // Save the Framework back into the custom database.
+        $frameworkRepository = new FrameworkRepository();
+        $frameworkRepository->update('salesforce_id', $framework->getSalesforceId(), $framework);
     }
 
 
