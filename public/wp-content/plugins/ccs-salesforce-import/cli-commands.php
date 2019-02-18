@@ -51,6 +51,7 @@ class Import
         $salesforceApi = new SalesforceApi();
 
         $frameworks = $salesforceApi->getAllFrameworks();
+
         $frameworkRepository = new FrameworkRepository();
         $lotRepository = new LotRepository();
 
@@ -62,7 +63,7 @@ class Import
                 continue;
             }
 
-            $framework = $frameworkRepository->findById($framework->getId());
+            $framework = $frameworkRepository->findById($framework->getSalesforceId(), 'salesforce_id');
 
             WP_CLI::success('Framework ' . $index . ' imported.');
             $importCount['frameworks']++;
@@ -121,8 +122,6 @@ class Import
      */
     protected function createFrameworkInWordpress($framework)
     {
-        var_dump($framework);
-        die();
         if (!empty($framework->getWordpressId()))
         {
             // This framework already has a Wordpress ID assigned, so we need to update the Title.
@@ -138,29 +137,17 @@ class Import
         // Save the Framework back into the custom database.
         $frameworkRepository = new FrameworkRepository();
         $frameworkRepository->update('salesforce_id', $framework->getSalesforceId(), $framework);
-
-        die();
     }
 
 
     public function updateFrameworkTitle($framework)
     {
-       $post_id = wp_update_post(array(
+       wp_update_post(array(
             'ID' => $framework->getWordpressId(),
-            'post_title' => 'Title 1',
+            'post_title' => $framework->getTitle(),
             'post_type' => 'framework'
-        ), true);
+        ));
 
-        if (is_wp_error($post_id)) {
-            $errors = $post_id->get_error_messages();
-            foreach ($errors as $error) {
-                echo $error;
-            }
-        }
-
-//        $frameworkTitle = get_post_field('post_title', $framework->getWordpressId());
-//
-//        update_field('post_title', 'Title1', $framework->getWordpressId());
     }
 
     public function createPostInWordpress($framework)
