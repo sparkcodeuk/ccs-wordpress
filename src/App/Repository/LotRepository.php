@@ -6,6 +6,16 @@ use App\Model\Lot;
 
 class LotRepository extends AbstractRepository
 {
+    protected $databaseBindings = [
+      'framework_id'   => ':framework_id',
+      'wordpress_id'   => ':wordpress_id',
+      'salesforce_id'  => ':salesforce_id',
+      'lot_number'     => ':lot_number',
+      'title'          => ':title',
+      'status'         => ':status',
+      'expiry_date'    => ':expiry_date',
+      'hide_suppliers' => ':hide_suppliers',
+    ];
 
     /**
      * Database table name
@@ -25,26 +35,15 @@ class LotRepository extends AbstractRepository
      */
     public function create(Lot $lot) {
 
-        $databaseBindings = [
-          'framework_id'   => ':framework_id',
-          'wordpress_id'   => ':wordpress_id',
-          'salesforce_id'  => ':salesforce_id',
-          'lot_number'     => ':lot_number',
-          'title'          => ':title',
-          'status'         => ':status',
-          'expiry_date'    => ':expiry_date',
-          'hide_suppliers' => ':hide_suppliers',
-        ];
-
         // Build the bindings PDO statement
-        $columns = implode(", ", array_keys($databaseBindings));
-        $fieldParams = implode(", ", array_values($databaseBindings));
+        $columns = implode(", ", array_keys($this->databaseBindings));
+        $fieldParams = implode(", ", array_values($this->databaseBindings));
 
         $sql = 'INSERT INTO ' . $this->tableName . ' (' . $columns . ') VALUES(' . $fieldParams . ')';
 
         $query = $this->connection->prepare($sql);
 
-        $query = $this->bindValues($databaseBindings, $query, $lot);
+        $query = $this->bindValues($this->databaseBindings, $query, $lot);
 
         return $query->execute();
     }
@@ -57,29 +56,18 @@ class LotRepository extends AbstractRepository
      */
     public function update($searchField, $searchValue, Lot $lot)
     {
-        $databaseBindings = [
-          'framework_id'   => ':framework_id',
-          'wordpress_id'   => ':wordpress_id',
-          'salesforce_id'  => ':salesforce_id',
-          'lot_number'     => ':lot_number',
-          'title'          => ':title',
-          'status'         => ':status',
-          'expiry_date'    => ':expiry_date',
-          'hide_suppliers' => ':hide_suppliers',
-        ];
-
         // Remove the field which we're using for the update command
-        if (isset($databaseBindings[$searchField]))
+        if (isset($this->databaseBindings[$searchField]))
         {
-            unset($databaseBindings[$searchField]);
+            unset($this->databaseBindings[$searchField]);
         }
 
         // Build the bindings PDO statement
         $sql = 'UPDATE ' . $this->tableName . ' SET ';
         $count = 0;
-        foreach ($databaseBindings as $column => $field) {
+        foreach ($this->databaseBindings as $column => $field) {
             $sql .= '`' . $column . '` = ' . $field;
-            if (count($databaseBindings) != ($count + 1)) {
+            if (count($this->databaseBindings) != ($count + 1)) {
                 $sql .= ', ';
             } else {
                 $sql .= ' ';
@@ -91,7 +79,7 @@ class LotRepository extends AbstractRepository
         $query = $this->connection->prepare($sql);
         $query->bindParam(':searchValue', $searchValue, \PDO::PARAM_STR);
 
-        $query = $this->bindValues($databaseBindings, $query, $lot);
+        $query = $this->bindValues($this->databaseBindings, $query, $lot);
 
         return $query->execute();
     }

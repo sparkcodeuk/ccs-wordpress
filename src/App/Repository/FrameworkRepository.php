@@ -6,6 +6,23 @@ use App\Model\Framework;
 
 class FrameworkRepository extends AbstractRepository {
 
+    protected $databaseBindings = [
+      'rm_number'           => ':rm_number',
+      'wordpress_id'        => ':wordpress_id',
+      'salesforce_id'       => ':salesforce_id',
+      'title'               => ':title',
+      'terms'               => ':terms',
+      'pillar'              => ':pillar',
+      'category'            => ':category',
+      'status'              => ':status',
+      'start_date'          => ':start_date',
+      'end_date'            => ':end_date',
+      'tenders_open_date'   => ':tenders_open_date',
+      'tenders_close_date'  => ':tenders_close_date',
+      'expected_live_date'  => ':expected_live_date',
+      'expected_award_date' => ':expected_award_date',
+    ];
+
      /**
      * Database table name
      *
@@ -24,32 +41,15 @@ class FrameworkRepository extends AbstractRepository {
      */
     public function create(Framework $framework) {
 
-        $databaseBindings = [
-          'rm_number'           => ':rm_number',
-          'wordpress_id'        => ':wordpress_id',
-          'salesforce_id'       => ':salesforce_id',
-          'title'               => ':title',
-          'terms'               => ':terms',
-          'pillar'              => ':pillar',
-          'category'            => ':category',
-          'status'              => ':status',
-          'start_date'          => ':start_date',
-          'end_date'            => ':end_date',
-          'tenders_open_date'   => ':tenders_open_date',
-          'tenders_close_date'  => ':tenders_close_date',
-          'expected_live_date'  => ':expected_live_date',
-          'expected_award_date' => ':expected_award_date',
-        ];
-
         // Build the bindings PDO statement
-        $columns = implode(", ", array_keys($databaseBindings));
-        $fieldParams = implode(", ", array_values($databaseBindings));
+        $columns = implode(", ", array_keys($this->databaseBindings));
+        $fieldParams = implode(", ", array_values($this->databaseBindings));
 
         $sql = 'INSERT INTO ' . $this->tableName . ' (' . $columns . ') VALUES(' . $fieldParams . ')';
 
         $query = $this->connection->prepare($sql);
 
-        $query = $this->bindValues($databaseBindings, $query, $framework);
+        $query = $this->bindValues($this->databaseBindings, $query, $framework);
 
         return $query->execute();
     }
@@ -62,35 +62,18 @@ class FrameworkRepository extends AbstractRepository {
      */
     public function update($searchField, $searchValue, Framework $framework)
     {
-        $databaseBindings = [
-          'rm_number'           => ':rm_number',
-          'wordpress_id'        => ':wordpress_id',
-          'salesforce_id'       => ':salesforce_id',
-          'title'               => ':title',
-          'terms'               => ':terms',
-          'pillar'              => ':pillar',
-          'category'            => ':category',
-          'status'              => ':status',
-          'start_date'          => ':start_date',
-          'end_date'            => ':end_date',
-          'tenders_open_date'   => ':tenders_open_date',
-          'tenders_close_date'  => ':tenders_close_date',
-          'expected_live_date'  => ':expected_live_date',
-          'expected_award_date' => ':expected_award_date',
-        ];
-
         // Remove the field which we're using for the update command
-        if (isset($databaseBindings[$searchField]))
+        if (isset($this->databaseBindings[$searchField]))
         {
-            unset($databaseBindings[$searchField]);
+            unset($this->databaseBindings[$searchField]);
         }
 
         // Build the bindings PDO statement
         $sql = 'UPDATE ' . $this->tableName . ' SET ';
         $count = 0;
-        foreach ($databaseBindings as $column => $field) {
+        foreach ($this->databaseBindings as $column => $field) {
             $sql .= '`' . $column . '` = ' . $field;
-            if (count($databaseBindings) != ($count + 1)) {
+            if (count($this->databaseBindings) != ($count + 1)) {
                 $sql .= ', ';
             } else {
                 $sql .= ' ';
@@ -102,7 +85,7 @@ class FrameworkRepository extends AbstractRepository {
         $query = $this->connection->prepare($sql);
         $query->bindParam(':searchValue', $searchValue, \PDO::PARAM_STR);
 
-        $query = $this->bindValues($databaseBindings, $query, $framework);
+        $query = $this->bindValues($this->databaseBindings, $query, $framework);
 
         return $query->execute();
     }

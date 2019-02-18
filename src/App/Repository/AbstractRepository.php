@@ -7,6 +7,13 @@ use App\Services\Database\DatabaseConnection;
 abstract class AbstractRepository implements RepositoryInterface {
 
     /**
+     * Database bindings array
+     *
+     * @var array
+     */
+    protected $databaseBindings = [];
+
+    /**
      * Database table name
      *
      * @var string
@@ -98,6 +105,28 @@ abstract class AbstractRepository implements RepositoryInterface {
         $modelCollection = $this->translateResultsToModels($results);
 
         return $modelCollection;
+    }
+
+    /**
+     * This method excludes the Wordpress Id, so it will not be overwritten with new (or null) data.
+     * Create the the current data object in the database or update it if it already exists
+     *
+     * @param $searchField
+     * @param $searchValue
+     * @param $object
+     * @return mixed
+     */
+    public function createOrUpdateExcludingWordpressId($searchField, $searchValue, $object)
+    {
+        $originalDataBindings = $this->databaseBindings;
+        if (isset($this->databaseBindings['wordpress_id'])) {
+            unset($this->databaseBindings['wordpress_id']);
+        }
+        $response = $this->createOrUpdate($searchField, $searchValue, $object);
+
+        $this->databaseBindings = $originalDataBindings;
+
+        return $response;
     }
 
     /**

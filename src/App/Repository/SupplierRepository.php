@@ -7,6 +7,19 @@ use App\Model\Supplier;
 class SupplierRepository extends AbstractRepository
 {
 
+    protected $databaseBindings = [
+      'salesforce_id' => ':salesforce_id',
+      'duns_number'   => ':duns_number',
+      'name'          => ':name',
+      'phone_number'  => ':phone_number',
+      'street'        => ':street',
+      'city'          => ':city',
+      'country'       => ':country',
+      'postcode'      => ':postcode',
+      'website'       => ':website',
+      'trading_name'  => ':trading_name',
+    ];
+
     /**
      * Database table name
      *
@@ -26,28 +39,17 @@ class SupplierRepository extends AbstractRepository
     public function create(Supplier $supplier)
     {
 
-        $databaseBindings = [
-          'salesforce_id' => ':salesforce_id',
-          'duns_number'   => ':duns_number',
-          'name'          => ':name',
-          'phone_number'  => ':phone_number',
-          'street'        => ':street',
-          'city'          => ':city',
-          'country'       => ':country',
-          'postcode'      => ':postcode',
-          'website'       => ':website',
-          'trading_name'  => ':trading_name',
-        ];
+
 
         // Build the bindings PDO statement
-        $columns = implode(", ", array_keys($databaseBindings));
-        $fieldParams = implode(", ", array_values($databaseBindings));
+        $columns = implode(", ", array_keys($this->databaseBindings));
+        $fieldParams = implode(", ", array_values($this->databaseBindings));
 
         $sql = 'INSERT INTO ' . $this->tableName . ' (' . $columns . ') VALUES(' . $fieldParams . ')';
 
         $query = $this->connection->prepare($sql);
 
-        $query = $this->bindValues($databaseBindings, $query, $supplier);
+        $query = $this->bindValues($this->databaseBindings, $query, $supplier);
 
         return $query->execute();
     }
@@ -60,30 +62,17 @@ class SupplierRepository extends AbstractRepository
      */
     public function update($searchField, $searchValue, Supplier $supplier)
     {
-        $databaseBindings = [
-          'salesforce_id' => ':salesforce_id',
-          'duns_number'   => ':duns_number',
-          'name'          => ':name',
-          'phone_number'  => ':phone_number',
-          'street'        => ':street',
-          'city'          => ':city',
-          'country'       => ':country',
-          'postcode'      => ':postcode',
-          'website'       => ':website',
-          'trading_name'  => ':trading_name',
-        ];
-
         // Remove the field which we're using for the update command
-        if (isset($databaseBindings[$searchField])) {
-            unset($databaseBindings[$searchField]);
+        if (isset($this->databaseBindings[$searchField])) {
+            unset($this->databaseBindings[$searchField]);
         }
 
         // Build the bindings PDO statement
         $sql = 'UPDATE ' . $this->tableName . ' SET ';
         $count = 0;
-        foreach ($databaseBindings as $column => $field) {
+        foreach ($this->databaseBindings as $column => $field) {
             $sql .= '`' . $column . '` = ' . $field;
-            if (count($databaseBindings) != ($count + 1)) {
+            if (count($this->databaseBindings) != ($count + 1)) {
                 $sql .= ', ';
             } else {
                 $sql .= ' ';
@@ -95,7 +84,7 @@ class SupplierRepository extends AbstractRepository
         $query = $this->connection->prepare($sql);
         $query->bindParam(':searchValue', $searchValue, \PDO::PARAM_STR);
 
-        $query = $this->bindValues($databaseBindings, $query, $supplier);
+        $query = $this->bindValues($this->databaseBindings, $query, $supplier);
 
         return $query->execute();
     }

@@ -7,6 +7,11 @@ use App\Model\LotSupplier;
 class LotSupplierRepository extends AbstractRepository
 {
 
+    protected $databaseBindings = [
+      'lot_id'      => ':lot_id',
+      'supplier_id' => ':supplier_id',
+    ];
+
     /**
      * Database table name
      *
@@ -25,20 +30,15 @@ class LotSupplierRepository extends AbstractRepository
      */
     public function create(LotSupplier $lotSupplier)
     {
-        $databaseBindings = [
-          'lot_id'      => ':lot_id',
-          'supplier_id' => ':supplier_id',
-        ];
-
         // Build the bindings PDO statement
-        $columns = implode(", ", array_keys($databaseBindings));
-        $fieldParams = implode(", ", array_values($databaseBindings));
+        $columns = implode(", ", array_keys($this->databaseBindings));
+        $fieldParams = implode(", ", array_values($this->databaseBindings));
 
         $sql = 'INSERT INTO ' . $this->tableName . ' (' . $columns . ') VALUES(' . $fieldParams . ')';
 
         $query = $this->connection->prepare($sql);
 
-        $query = $this->bindValues($databaseBindings, $query, $lotSupplier);
+        $query = $this->bindValues($this->databaseBindings, $query, $lotSupplier);
 
         return $query->execute();
     }
@@ -51,22 +51,17 @@ class LotSupplierRepository extends AbstractRepository
      */
     public function update($searchField, $searchValue, LotSupplier $lotSupplier)
     {
-        $databaseBindings = [
-          'lot_id'      => ':lot_id',
-          'supplier_id' => ':supplier_id',
-        ];
-
         // Remove the field which we're using for the update command
-        if (isset($databaseBindings[$searchField])) {
-            unset($databaseBindings[$searchField]);
+        if (isset($this->databaseBindings[$searchField])) {
+            unset($this->databaseBindings[$searchField]);
         }
 
         // Build the bindings PDO statement
         $sql = 'UPDATE ' . $this->tableName . ' SET ';
         $count = 0;
-        foreach ($databaseBindings as $column => $field) {
+        foreach ($this->databaseBindings as $column => $field) {
             $sql .= '`' . $column . '` = ' . $field;
-            if (count($databaseBindings) != ($count + 1)) {
+            if (count($this->databaseBindings) != ($count + 1)) {
                 $sql .= ', ';
             } else {
                 $sql .= ' ';
@@ -78,7 +73,7 @@ class LotSupplierRepository extends AbstractRepository
         $query = $this->connection->prepare($sql);
         $query->bindParam(':searchValue', $searchValue, \PDO::PARAM_STR);
 
-        $query = $this->bindValues($databaseBindings, $query, $lotSupplier);
+        $query = $this->bindValues($this->databaseBindings, $query, $lotSupplier);
 
         return $query->execute();
     }

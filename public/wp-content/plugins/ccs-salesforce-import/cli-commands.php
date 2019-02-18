@@ -55,7 +55,7 @@ class Import
         $lotRepository = new LotRepository();
 
         foreach ($frameworks as $index => $framework) {
-            if (!$frameworkRepository->createOrUpdate('salesforce_id',
+            if (!$frameworkRepository->createOrUpdateExcludingWordpressId('salesforce_id',
               $framework->getSalesforceId(), $framework)) {
                 WP_CLI::error('Framework ' . $index . ' not imported.');
                 $errorCount['frameworks']++;
@@ -72,7 +72,7 @@ class Import
             $lots = $salesforceApi->getFrameworkLots($framework->getSalesforceId());
 
             foreach ($lots as $lot) {
-                if (!$lotRepository->createOrUpdate('salesforce_id',
+                if (!$lotRepository->createOrUpdateExcludingWordpressId('salesforce_id',
                   $lot->getSalesforceId(), $lot)) {
                     $errorCount['lots']++;
                     continue;
@@ -90,7 +90,7 @@ class Import
                   'lot_id');
 
                 foreach ($suppliers as $supplier) {
-                    if (!$supplierRepository->createOrUpdate('salesforce_id',
+                    if (!$supplierRepository->createOrUpdateExcludingWordpressId('salesforce_id',
                       $supplier->getSalesforceId(), $supplier)) {
                         $errorCount['suppliers']++;
                         continue;
