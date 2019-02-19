@@ -45,6 +45,34 @@ define( 'DB_CHARSET', getenv('WP_DB_CHARSET') );
 /** The Database Collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', getenv('WP_DB_COLLATE') );
 
+
+/**
+ * For developers: WordPress debugging mode.
+ *
+ * @link https://codex.wordpress.org/Debugging_in_WordPress
+ */
+$debug = (getenv('WP_DEBUG') == 1) ? true : false;
+define('WP_DEBUG', $debug);
+
+/**
+ * Site URL
+ */
+$host = getenv('WP_SITEURL');
+$ssl = (getenv('WP_SSL') == 1) ? true : false;
+$protocol = ($ssl) ? 'https://' : 'http://';
+if (empty($host)) {
+    throw new \Exception("Cannot detect hostname via env var WP_SITEURL");
+}
+define( 'WP_SITEURL', $protocol . rtrim($host, '/'));
+define('WP_HOME', WP_SITEURL);
+define( 'FORCE_SSL_ADMIN', $ssl );
+
+// Ensure SSL works when HTTPS is terminated at load balancer
+if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) {
+    $_SERVER['HTTPS']='on';
+}
+
+
 /**
  * Authentication Unique Keys and Salts.
  *
