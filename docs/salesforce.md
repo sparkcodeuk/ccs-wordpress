@@ -16,7 +16,11 @@ Obtain the following credentials from whoever manages the Salesforce instance, a
 
 Visit the `/generate-token.php` path to generate a new token.
 
-Update the `.env` file with the following two bits of information received in the token request response:
+This should automatically inject the new Access Token and Instance Url into the .env file. If not, do this manually now with the following two bits of information received in the token request response:
 
 * SALESFORCE_ACCESS_TOKEN
 * SALESFORCE_INSTANCE_URL
+
+## Running the import
+
+The import can be run with the command `wp salesforce import all` when in the `/public` folder.

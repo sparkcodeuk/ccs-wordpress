@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Salesforce;
 
+use App\Model\Framework;
+use App\Model\Lot;
+use App\Model\Supplier;
+use App\Utils\YamlLoader;
 use GuzzleHttp\Client;
 
 /**
@@ -78,6 +82,7 @@ class SalesforceApi
 
     /**
      * @param string $query
+     * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function query($query)
@@ -119,16 +124,82 @@ class SalesforceApi
      * @param $frameworkId
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \ReflectionException
      */
-    public function getFramework($frameworkId)
+    public function getSingleFramework($frameworkId)
     {
+        // Make API Request
         $this->response = $this->client->request('GET', 'sobjects/Master_Framework__c/' . $frameworkId, [
           'headers' => $this->headers,
         ]);
 
-        return $this->getResponseContent();
+        $framework = new Framework();
+        $framework->setMappedFields($this->getResponseContent());
+
+        return $framework;
     }
 
+    /**
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \ReflectionException
+     */
+    public function getAllFrameworks()
+    {
+        $frameworkMappings = YamlLoader::loadMappings('Framework');
+        $fieldsToReturn = implode(', ', array_values($frameworkMappings['properties']));
+
+        // Make API Request
+        $response = $this->query('SELECT ' . $fieldsToReturn . ' from ' . $frameworkMappings['objectName']);
+
+        $frameworks = [];
+
+        foreach ($response->records as $salesforceRecord)
+        {
+            $framework = new Framework();
+            $framework->setMappedFields($salesforceRecord);
+            $frameworks[] = $framework;
+        }
+
+        return $frameworks;
+    }
+
+    public function getFrameworkLots($salesforceFrameworkId) {
+        return $this->getAllLots('Master_Framework__c = \'' . $salesforceFrameworkId . '\'');
+    }
+
+    /**
+     * @param null $where
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \ReflectionException
+     */
+    public function getAllLots($where = null)
+    {
+        $frameworkMappings = YamlLoader::loadMappings('Lot');
+        $fieldsToReturn = implode(', ', array_values($frameworkMappings['properties']));
+
+        // Make API Request
+        $query = 'SELECT ' . $fieldsToReturn . ' from ' . $frameworkMappings['objectName'];
+
+        // Add where query if it exists
+        if ($where) {
+            $query .= ' WHERE ' . $where;
+        }
+        
+        $response = $this->query($query);
+
+        $lots = [];
+
+        foreach ($response->records as $salesforceRecord)
+        {
+            $lot = new Lot();
+            $lot->setMappedFields($salesforceRecord);
+            $lots[] = $lot;
+        }
+
+        return $lots;
+    }
 
     /**
      * @param $lotId
@@ -141,7 +212,23 @@ class SalesforceApi
           'headers' => $this->headers,
         ]);
 
-        return $this->getResponseContent();
+        $lot = new Lot();
+        $lot->setMappedFields($this->getResponseContent());
+
+        return $lot;
+    }
+
+    public function getLotSuppliers($lotId)
+    {
+        $suppliersToDisplay = $this->query("SELECT Id, Supplier__c from Supplier_Framework_Lot__c WHERE Master_Framework_Lot__c = '" . $lotId . "' AND (Status__c = 'Live' OR Status__c = 'Suspended')");
+
+        $suppliers = [];
+        foreach ($suppliersToDisplay->records as $supplierToDisplay)
+        {
+            $suppliers[] = $this->getSupplier($supplierToDisplay->Supplier__c);
+        }
+
+        return $suppliers;
     }
 
 
@@ -150,7 +237,7 @@ class SalesforceApi
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getSupplier($supplierId)
+    public function getContact($supplierId)
     {
         $this->response = $this->client->request('GET', 'sobjects/Master_Framework_Lot_Contact__c/' . $supplierId, [
           'headers' => $this->headers,
@@ -163,29 +250,18 @@ class SalesforceApi
      * @param $accountId
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \ReflectionException
      */
-    public function getAccount($accountId)
+    public function getSupplier($accountId)
     {
         $this->response = $this->client->request('GET', 'sobjects/Account/' . $accountId, [
           'headers' => $this->headers,
         ]);
 
-        return $this->getResponseContent();
-    }
+        $supplier = new Supplier();
+        $supplier->setMappedFields($this->getResponseContent());
 
-
-    /**
-     * @param $categoryId
-     * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function getCategory($categoryId)
-    {
-        $this->response = $this->client->request('GET', 'sobjects/Category__c/' . $categoryId, [
-          'headers' => $this->headers,
-        ]);
-
-        return $this->getResponseContent();
+        return $supplier;
     }
 
 
